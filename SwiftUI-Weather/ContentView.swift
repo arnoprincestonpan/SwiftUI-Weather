@@ -8,19 +8,22 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var isNight = false
+    
     var body: some View {
         ZStack {
-            BackgroundView(topColor: .blue, bottomColor: Color("babyBlue"))
+            BackgroundView(isNight: $isNight)
             VStack{
                 CityTextView(cityName: "Cupertino", stateName: "CA")
                 
-                MainWeatherStatusView(imageName: "cloud.sun.fill", temperature: 76)
+                MainWeatherStatusView(imageName: isNight ? "moon.stars.fill" : "cloud.sun.fill", temperature: 76)
                 
-                WeekWeatherStatusView()
+                WeekWeatherStatusView(isNight: $isNight)
                 Spacer()
                 
                 Button{
-                    print("tap")
+                    isNight.toggle()
                 } label: {
                     WeatherButtonLabel(title: "Change Day Time", textColor: .blue, backgroundColor: .white)
                 }
@@ -63,12 +66,12 @@ struct WeatherDayView: View {
 
 struct BackgroundView: View {
     // changing Color(s)
-    var topColor: Color
-    var bottomColor: Color
+    
+    @Binding var isNight: Bool
     
     var body: some View {
         
-        LinearGradient(gradient: Gradient(colors: [topColor, bottomColor]), startPoint: .topLeading, endPoint: .bottomTrailing)
+        LinearGradient(gradient: Gradient(colors: [isNight ? .black: .blue, isNight ? .gray : Color("babyBlue")]), startPoint: .topLeading, endPoint: .bottomTrailing)
             .edgesIgnoringSafeArea(.all)
     }
 }
@@ -108,29 +111,17 @@ struct MainWeatherStatusView: View {
 }
 
 struct WeekWeatherStatusView: View {
+    
+    @Binding var isNight: Bool
+    
     var body: some View {
         HStack(spacing: 24){
             
-            WeatherDayView(dayOfWeek: "TUES", imageName: "sun.max.fill", temperature: 77)
-            WeatherDayView(dayOfWeek: "WED", imageName: "cloud.sun.fill", temperature: 70)
-            WeatherDayView(dayOfWeek: "THURS", imageName: "cloud.heavyrain.fill", temperature: 68)
-            WeatherDayView(dayOfWeek: "FRI", imageName: "cloud.rain.fill", temperature: 65)
-            WeatherDayView(dayOfWeek: "SAT", imageName: "cloud.rain.fill", temperature: 64)
+            WeatherDayView(dayOfWeek: "TUES", imageName: isNight ? "moon.fill" : "sun.max.fill", temperature: 77)
+            WeatherDayView(dayOfWeek: "WED", imageName: isNight ? "moon.haze.fill" : "sun.dust.fill", temperature: 70)
+            WeatherDayView(dayOfWeek: "THURS", imageName: isNight ? "cloud.fog.fill" : "cloud.fill", temperature: 68)
+            WeatherDayView(dayOfWeek: "FRI", imageName: isNight ? "moon.stars.circle.fill" : "sun.and.horizon.fill", temperature: 65)
+            WeatherDayView(dayOfWeek: "SAT", imageName: isNight ? "moon.fill" : "sun.max.fill", temperature: 64)
         }
-    }
-}
-
-struct WeatherButtonLabel: View {
-    var title: String
-    var textColor: Color
-    var backgroundColor: Color
-    
-    var body: some View {
-        Text(title)
-            .frame(width: 314, height: 64)
-            .background(backgroundColor)
-            .foregroundColor(textColor)
-            .font(.system(size: 24, weight: .bold, design: .default))
-            .cornerRadius(16.0)
     }
 }
